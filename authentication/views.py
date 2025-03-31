@@ -32,10 +32,36 @@ class RegistrationView(View):
         return render(request, 'authentication/register.html')
     
     def post(self, request):
-        messages.success(request, 'Success kaif')
-        messages.warning(request, 'Warning sad')
-        messages.info(request, 'Info kaif')
-        messages.error(request, 'Error sad')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        context = {
+            "fieldValues": request.POST
+        }
+
+        if not username or not email or not password:
+            messages.error(request, "Please fill in all the fields.")
+            return render(request, 'authentication/register.html', context)
+        
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username is already taken.")
+            return render(request, 'authentication/register.html', context)
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email is already in use.")
+            return render(request, 'authentication/register.html', context)
+        
+        if len(password) < 6:
+            messages.error(request, "Password too short. Minimum 6 characters.")
+            return render(request, 'authentication/register.html', context)
+
+        user = User.objects.create_user(username=username, email=email)
+        user.set_password(password)
+        user.save()
+
+        messages.success(request, "Account successfully created!")
+           
         return render(request, 'authentication/register.html')
     
 
