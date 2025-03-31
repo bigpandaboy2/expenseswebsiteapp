@@ -1,13 +1,45 @@
-const usernameField=document.querySelector('#usernameField');
-const feedbackArea = document.querySelector('.invalid_feedback');
+const usernameField = document.querySelector('#usernameField');
+const feedBackArea = document.querySelector('.invalid_feedback');
+
+const emailField = document.querySelector("#emailField");
+const emailFeedBackArea = document.querySelector(".emailFeedBackArea");
+
+const usernamesuccessOutput = document.querySelector(".usernamesuccessOutput");
+emailField.addEventListener("keyup", (e) => {
+    const emailVal = e.target.value;
+
+    emailField.classList.remove('is-invalid');
+    emailFeedBackArea.style.display = "none";
+
+    if (emailVal.length > 0) {
+        fetch("/authentication/validate-email", {
+            body: JSON.stringify({ email: emailVal }),
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("data", data);
+            if (data.email_error) {
+                emailField.classList.add('is-invalid');
+                emailFeedBackArea.style.display = "block";
+                emailFeedBackArea.innerHTML = `<p>${data.email_error}</p>`;
+            }
+        });
+    }
+});
+
 
 usernameField.addEventListener('keyup', (e) => {
-    console.log('77777', 77777);
     const usernameVal = e.target.value;
+    usernamesuccessOutput.style.display= 'block';
+    usernamesuccessOutput.textContent = `Checking ${usernameVal}`;
 
-    feedbackArea.style.display = "none";
+    feedBackArea.style.display = "none";
     usernameField.classList.remove('is-invalid');
-    feedbackArea.style.display = "none";
+    feedBackArea.style.display = "none";
 
     if(usernameVal.length > 0) {
         fetch('/authentication/validate-username', {
@@ -17,10 +49,11 @@ usernameField.addEventListener('keyup', (e) => {
         .then(res => res.json())
         .then(data => {
             console.log("data", data);
+            usernamesuccessOutput.style.display= 'none';
             if(data.username_error){
                 usernameField.classList.add('is-invalid');
-                feedbackArea.style.display = "block";
-                feedbackArea.innerHTML = `<p>${data.username_error}</p>`;
+                feedBackArea.style.display = "block";
+                feedBackArea.innerHTML = `<p>${data.username_error}</p>`;
             }
         });
     }

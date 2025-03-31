@@ -3,6 +3,8 @@ from django.views import View
 import json
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 class UsernameValidationView(View):
     def post(self, request):
@@ -27,3 +29,25 @@ class UsernameValidationView(View):
 class RegistrationView(View):
     def get(self, request):
         return render(request, 'authentication/register.html')
+    
+
+class EmailValidationView(View):
+    def post(self, request):
+        data = json.loads(request.body)
+        email = data.get('email')
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return JsonResponse(
+                {'email_error': 'Email is invalid.'},
+                status=400
+            )
+        
+        if User.objects.filter(email=email).exists():
+            return JsonResponse(
+                {'email_error': 'Choose another email since it is already taken.'},
+                status=409
+            )
+        
+        return JsonResponse({'email_valid': True})
