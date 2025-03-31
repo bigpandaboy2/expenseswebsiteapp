@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 class UsernameValidationView(View):
     def post(self, request):
@@ -28,6 +29,13 @@ class UsernameValidationView(View):
 
 class RegistrationView(View):
     def get(self, request):
+        return render(request, 'authentication/register.html')
+    
+    def post(self, request):
+        messages.success(request, 'Success kaif')
+        messages.warning(request, 'Warning sad')
+        messages.info(request, 'Info kaif')
+        messages.error(request, 'Error sad')
         return render(request, 'authentication/register.html')
     
 
