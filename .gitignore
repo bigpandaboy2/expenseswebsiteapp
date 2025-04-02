@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+.Python
+
+# Django migrations
+*/migrations/
+!*/migrations/__init__.py
+
+# SQLite database
+*.sqlite3
+db.sqlite3
+
+# Secrets
+.env
+.env.*
+
+# Logs
+*.log
+
+# VSCode settings
+.vscode/
+
+# PyCharm settings
+.idea/
+
+# macOS
+.DS_Store
+
+# Node (если используется фронт)
+node_modules/
+package-lock.json
+
+# Static and media (if generated/collected)
+staticfiles/
+media/

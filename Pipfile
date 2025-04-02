@@ -10,6 +10,10 @@ gunicorn = "*"
 django-heroku = "*"
 email-validator = "*"
 validate-email = "*"
+python-dotenv = "*"
+certifi = "*"
+pip-system-certs = "*"
+six = "*"
 
 [dev-packages]
 
