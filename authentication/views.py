@@ -120,4 +120,28 @@ class EmailValidationView(View):
 
 class VerificationView(View):
     def get(self, request, uidb64, token):
-        return redirect('login')
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+
+            if user.is_active:
+                messages.info(request, "Account already activated.")
+                return redirect('login')
+
+            if token_generator.check_token(user, token):
+                user.is_active = True
+                user.save()
+                messages.success(request, 'Account activated successfully!')
+                return redirect('login')
+            else:
+                messages.error(request, 'Activation link is invalid or has expired.')
+                return redirect('login')
+
+        except Exception as e:
+            messages.error(request, 'Something went wrong during activation.')
+            return redirect('login')
+    
+
+class LoginView(View):
+    def get(self, request):
+        return render(request, 'authentication/login.html')
