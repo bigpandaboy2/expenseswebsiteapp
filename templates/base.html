@@ -137,7 +137,10 @@
   <div id="navbarSearch" class="navbar-search w-100">
     <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
   </div>
-  <a href="/logout/" class="btn btn-dark border-0 rounded-0 px-3">Sign out</a>
+  <form action="{% url 'logout' %}" method="POST">
+    {% csrf_token %}
+    <input class="text text-capitalize" type="submit" value="Sign out" />
+  </form>
 </header>
 
 <div class="container-fluid">
