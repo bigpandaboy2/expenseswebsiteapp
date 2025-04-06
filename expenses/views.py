@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
+
+from userpreferences.models import UserPreference
 from .models import Category, Expense
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -26,10 +28,15 @@ def index(request):
     paginator = Paginator(expenses, 5)
     page_number = request.GET.get('page')
     page_obj = Paginator.get_page(paginator, page_number)
+    try:
+        currency = UserPreference.objects.get(user=request.user).currency
+    except UserPreference.DoesNotExist:
+        currency = 'USD'
 
     context = {
         'expenses': expenses,
         'page_obj': page_obj,
+        'currency': currency,
     }
     return render(request, 'expenses/index.html', context)
 
