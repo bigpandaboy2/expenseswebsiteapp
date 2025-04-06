@@ -28,15 +28,15 @@ A web application to track your personal income and expenses. Built with Django,
 
 ---
 ## Environment Variables
-Create a .env file at the root:
+Check ".env.example" and apply to your environemnt:
 
-SECRET_KEY=your_django_secret_key
-DEBUG=True
-EMAIL_HOST=smtp.example.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=your_email@example.com
-EMAIL_HOST_PASSWORD=your_password
-EMAIL_USE_TLS=True
+- SECRET_KEY=your_django_secret_key
+- DEBUG=True
+- EMAIL_HOST=smtp.example.com
+- EMAIL_PORT=587
+- EMAIL_HOST_USER=your_email@example.com
+- EMAIL_HOST_PASSWORD=your_password
+- EMAIL_USE_TLS=True
 
 ## 📦 Installation
 
@@ -67,5 +67,3 @@ python manage.py createsuperuser
 
 # Run the server
 python manage.py runserver
-
-check ".env.example" and apply to your environemnt
