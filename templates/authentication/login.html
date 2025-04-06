@@ -1,9 +1,7 @@
 {% extends 'base_auth.html' %}
-
 {% load static %}
 
 {% block content %}
-
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4">
         <div class="card mt-5 shadow-sm">
@@ -26,7 +24,7 @@
                         />
                     </div>
 
-                    <div class="form-group mb-3 position-relative">
+                    <div class="form-group mb-4 position-relative">
                         <input 
                             type="password" 
                             name="password" 
@@ -39,9 +37,19 @@
                     <input 
                         type="submit" 
                         value="Login"
-                        class="btn btn-primary w-100 submitBtn" 
+                        class="btn btn-primary w-100 submitBtn mb-3" 
                     />
                 </form>
+
+                <div class="text-center">
+                    <p class="mb-1">
+                        Don’t have an account?
+                        <a href="{% url 'register' %}">Register here</a>
+                    </p>
+                    <p>
+                        <a href="{% url 'request-password' %}">Forgot your password?</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -49,5 +57,4 @@
 
 <meta name="csrf-token" content="{{ csrf_token }}">
 <script src="{% static 'js/register.js' %}"></script>
-
 {% endblock %}

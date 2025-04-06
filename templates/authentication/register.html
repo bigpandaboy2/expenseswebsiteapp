@@ -1,5 +1,4 @@
 {% extends 'base_auth.html' %}
-
 {% load static %}
 
 {% block content %}
@@ -12,7 +11,6 @@
                 
                 <form action="{% url 'register' %}" method="post">
                     {% csrf_token %}
-
                     {% include 'partials/_messages.html' %}
                     
                     <div class="form-group mb-3">
@@ -24,13 +22,9 @@
                             class="form-control form-control-sm" 
                             value="{{fieldValues.username}}"
                         />
+                        <div class="invalid_feedback invalid-feedback mt-1" style="display:none"></div>
+                        <p class="text-sm text-success usernamesuccessOutput mt-1"></p>
                     </div>
-
-                    <div class="invalid_feedback invalid-feedback" style="display:none">
-                        
-                    </div>
-
-                    <p class="text-sm text-success usernamesuccessOutput"></p>
 
                     <div class="form-group mb-3">
                         <input 
@@ -41,9 +35,8 @@
                             class="form-control form-control-sm" 
                             value="{{fieldValues.email}}"
                         />
+                        <div class="emailFeedBackArea invalid-feedback mt-1" style="display:none"></div>
                     </div>
-
-                    <div class="emailFeedBackArea invalid-feedback" style="display:none"></div>
 
                     <div class="form-group mb-3 position-relative">
                         <input 
@@ -61,9 +54,19 @@
                     <input 
                         type="submit" 
                         value="Register"
-                        class="btn btn-primary w-100 submitBtn" 
+                        class="btn btn-primary w-100 submitBtn mb-3" 
                     />
                 </form>
+
+                <div class="text-center mt-3">
+                    <p class="mb-1">
+                        Already have an account?
+                        <a href="{% url 'login' %}">Login</a>
+                    </p>
+                    <p>
+                        <a href="{% url 'request-password' %}">Forgot your password?</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
