@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render, redirect
 from .models import Source, UserIncome
 from django.core.paginator import Paginator
@@ -5,7 +6,9 @@ from userpreferences.models import UserPreference
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 import json
+from .models import UserIncome
 from django.http import JsonResponse
+from django.db.models import Sum
 
 
 def search_income(request):
@@ -107,3 +110,28 @@ def delete_income(request, id):
     income.delete()
     messages.success(request, 'record removed')
     return redirect('income')
+
+
+@login_required(login_url='/authentication/login')
+def income_source_summary(request):
+    todays_date = datetime.date.today()
+    six_months_ago = todays_date - datetime.timedelta(days=180)
+
+    incomes = UserIncome.objects.filter(
+        owner=request.user,
+        date__gte=six_months_ago,
+        date__lte=todays_date
+    )
+
+    final_report = {}
+    sources = incomes.values_list('source', flat=True).distinct()
+
+    for source in sources:
+        total_amount = incomes.filter(source=source).aggregate(total=Sum('amount'))['total'] or 0
+        final_report[source] = float(total_amount)
+
+    return JsonResponse({'income_source_summary': final_report})
+
+@login_required(login_url='/authentication/login')
+def income_stats_view(request):
+    return render(request, 'income/stats.html')

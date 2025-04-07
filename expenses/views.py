@@ -7,6 +7,7 @@ from .models import Category, Expense
 from django.contrib import messages
 from django.core.paginator import Paginator
 import json
+import datetime
 
 
 def search_expenses(request):
@@ -118,3 +119,29 @@ def delete_expense(request, id):
     expense.delete()
     messages.success(request, 'Expense removed.')
     return redirect('expenses')
+
+
+@login_required(login_url='/authentication/login')
+def expense_category_summary(request):
+    todays_date = datetime.date.today()
+    six_months_ago = todays_date - datetime.timedelta(days=180)
+
+    expenses = Expense.objects.filter(
+        owner=request.user, 
+        date__gte=six_months_ago, 
+        date__lte=todays_date  
+    )
+
+    final_report = {}
+
+    categories = expenses.values_list('category', flat=True).distinct()
+
+    for category in categories:
+        total_amount = sum(exp.amount for exp in expenses.filter(category=category))
+        final_report[category] = float(total_amount)
+
+    return JsonResponse({'expense_category_data': final_report}, safe=False)
+
+@login_required(login_url='/authentication/login')
+def stats_view(request):
+    return render(request, 'expenses/stats.html')

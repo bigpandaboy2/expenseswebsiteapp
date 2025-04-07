@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-10">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="#">Income Summary</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            Income
+          </li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="col-md-2">
+      <a href="{% url 'income' %}" class="btn btn-primary">Back</a>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-8 mb-5">
+      <canvas id="incomeChart" width="400" height="400"></canvas>
+    </div>
+    <div class="col-md-4"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.2/dist/chart.umd.min.js"></script>
+
+<!-- Define the URL dynamically from Django -->
+<script>
+  const incomeSummaryURL = "{% url 'income_source_summary' %}";
+</script>
+
+<!-- Load the JS file -->
+<script src="{% static 'js/incomeStats.js' %}"></script>
+{% endblock content %}

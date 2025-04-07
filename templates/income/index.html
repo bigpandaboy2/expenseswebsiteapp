@@ -3,48 +3,41 @@
 
 {% block content %}
 <div class="container mt-4">
-  <div class="row">
+  <div class="row mb-3">
     <div class="col-md-10">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
-            <a href="">Income</a>
+            <a href="{% url 'income' %}">Income</a>
           </li>
-          <li class="breadcrumb-item active" aria-current="page">
-            My Income
-          </li>
+          <li class="breadcrumb-item active" aria-current="page">My Income</li>
         </ol>
       </nav>
     </div>
-
-    <div class="col-md-2">
+    <div class="col-md-2 text-end">
       <a href="{% url 'add-income' %}" class="btn btn-primary">Add Income</a>
     </div>
   </div>
 
-  <div class="container">
-    {% include 'partials/_messages.html' %}
+  {% include 'partials/_messages.html' %}
 
-    {% if income.count %}
-
-    <div class="row mt-3">
-      <div class="col-md-8"></div>
-      <div class="col-md-4">
-        <div class="form-group">
-          <input type="text" class="form-control" id="searchField" placeholder="Search">
-        </div>
-      </div>
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="search" name="search" id="searchField" class="form-control" placeholder="Search by source">
     </div>
+  </div>
 
-    <div class="app-table mt-3">
-      <table class="table table-stripped table-hover">
+  <div class="table-responsive">
+    <div class="app-table">
+      {% if page_obj.object_list %}
+      <table class="table table-striped table-hover">
         <thead>
           <tr>
-            <th>Amount ({{ currency }})</th>
-            <th>Source</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th></th>
+            <th scope="col">Amount ({{ currency }})</th>
+            <th scope="col">Source</th>
+            <th scope="col">Description</th>
+            <th scope="col">Date</th>
+            <th scope="col">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -53,7 +46,7 @@
             <td>{{ income.amount }}</td>
             <td>{{ income.source }}</td>
             <td>{{ income.description }}</td>
-            <td>{{ income.date }}</td>
+            <td>{{ income.date|date:"M d, Y" }}</td>
             <td>
               <a href="{% url 'income-edit' income.id %}" class="btn btn-secondary btn-sm">Edit</a>
             </td>
@@ -61,26 +54,8 @@
           {% endfor %}
         </tbody>
       </table>
-    </div>
 
-    <p class="no-results" style="display: none;">No results</p>
-
-    <div class="table-output">
-      <table class="table table-stripped table-hover">
-        <thead>
-          <tr>
-            <th>Amount ({{ currency }})</th>
-            <th>Source</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody class="table-body"></tbody>
-      </table>
-    </div>
-
-    <div class="d-flex justify-content-end mt-3">
+      <div class="d-flex justify-content-end mt-3">
         <ul class="pagination">
           {% if page_obj.has_previous %}
             <li class="page-item">
@@ -90,11 +65,11 @@
               <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
             </li>
           {% endif %}
-      
+
           <li class="page-item active">
             <a class="page-link" href="#">{{ page_obj.number }}</a>
           </li>
-      
+
           {% if page_obj.has_next %}
             <li class="page-item">
               <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
@@ -105,10 +80,16 @@
           {% endif %}
         </ul>
       </div>
-      
-    {% endif %}
+
+      {% else %}
+      <p class="text-muted text-center">No income records found.</p>
+      {% endif %}
+    </div>
+
+    <div class="table-output table-responsive" style="display: none;"></div>
+    <p class="no-results text-muted text-center py-3" style="display: none;">No results found.</p>
   </div>
 </div>
 
 <script src="{% static 'js/searchIncome.js' %}"></script>
-{% endblock content %}
+{% endblock %}
