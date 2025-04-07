@@ -1,5 +1,5 @@
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
 from userpreferences.models import UserPreference
@@ -8,6 +8,12 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 import json
 import datetime
+import csv
+import xlwt
+from django.template.loader import render_to_string
+from weasyprint import HTML
+import tempfile
+from django.db.models import Sum
 
 
 def search_expenses(request):
@@ -145,3 +151,85 @@ def expense_category_summary(request):
 @login_required(login_url='/authentication/login')
 def stats_view(request):
     return render(request, 'expenses/stats.html')
+
+
+@login_required(login_url='/authentication/login')
+def export_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=Expenses_' + \
+        str(datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")) + '.csv'
+
+    writer = csv.writer(response)
+    writer.writerow(['Amount', 'Description', 'Category', 'Date'])
+
+    expenses = Expense.objects.filter(owner=request.user)
+    for expense in expenses:
+        writer.writerow([
+            expense.amount,
+            expense.description,
+            expense.category,
+            expense.date
+        ])
+
+    return response
+
+
+@login_required(login_url='/authentication/login')
+def export_excel(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=Expenses_' + \
+        datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.xls'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Expenses')
+
+    row_num = 0
+
+    header_style = xlwt.XFStyle()
+    header_style.font.bold = True
+
+    columns = ['Amount', 'Description', 'Category', 'Date']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], header_style)
+
+    data_style = xlwt.XFStyle()
+
+    rows = Expense.objects.filter(owner=request.user).values_list(
+        'amount', 'description', 'category', 'date'
+    )
+
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, str(row[col_num]), data_style)
+
+    wb.save(response)
+    return response
+
+
+@login_required(login_url='/authentication/login')
+def export_pdf(request):
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=Expenses_' + \
+        datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.pdf'
+    response['Content-Transfer-Encoding'] = 'binary' 
+
+    expenses = Expense.objects.filter(owner=request.user)
+    total = expenses.aggregate(Sum('amount'))
+
+    html_string = render_to_string(
+        'expenses/pdf-output.html', 
+        {'expenses': expenses, 'total': total['amount__sum']}
+    )
+
+    html = HTML(string=html_string)
+
+    with tempfile.NamedTemporaryFile(delete=True) as output:
+        html.write_pdf(target=output.name)
+        output.flush()
+
+        with open(output.name, 'rb') as f:
+            response.write(f.read())
+
+    return response

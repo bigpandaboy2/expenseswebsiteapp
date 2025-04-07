@@ -14,6 +14,8 @@ certifi = "*"
 pip-system-certs = "*"
 six = "*"
 gunicorn = "*"
+xlwt = "*"
+weasyprint = "*"
 
 [dev-packages]
 
